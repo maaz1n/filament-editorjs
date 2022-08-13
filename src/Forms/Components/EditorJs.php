@@ -27,19 +27,25 @@ class EditorJs extends Field implements HasFileAttachmentsContract
     'code',
     'inline-code',
     'style',
+    'media-picker',
   ];
 
-  protected int | Closure | null $minHeight = 30;
+  protected array | Closure $config = [
+    'editor' => ['minHeight' => 30],
+  ];
 
   public function minHeight(int | Closure | null $minHeight): static
   {
-      $this->minHeight = $minHeight;
+      $this->config['editor']['minHeight'] = $this->evaluate($minHeight);
 
       return $this;
   }
 
-  public function getMinHeight(): ?int
+  public function mediaRoute(string $route): static
   {
-      return $this->evaluate($this->minHeight);
+    $url = (string) str(route($route, 'm'))->beforeLast('m');
+    $this->config['mediaPicker']['url'] = $url;
+
+    return $this;
   }
 }

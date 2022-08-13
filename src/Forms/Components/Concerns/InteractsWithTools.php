@@ -43,6 +43,11 @@ trait InteractsWithTools
     return $this->evaluate($this->tools);
   }
 
+  public function getConfig(): array
+  {
+    return $this->evaluate($this->config);
+  }
+
   public function hasTools(string | array $button): bool
   {
     if (is_array($button)) {

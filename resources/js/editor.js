@@ -11,14 +11,16 @@ import RawTool from "@editorjs/raw";
 import Delimiter from "@editorjs/delimiter";
 import { StyleInlineTool } from "editorjs-style";
 import DragDrop from "editorjs-drag-drop";
+import MediaPicker from "./media-picker/media-picker";
 
 document.addEventListener("alpine:init", () => {
   Alpine.data(
     "editorjs",
-    ({ state, statePath, placeholder, readOnly, tools, minHeight }) => ({
+    ({ state, statePath, placeholder, readOnly, tools, config }) => ({
       instance: null,
       state: state,
-      tools: tools,
+      tools: Object.values(tools),
+      config: config,
       init() {
         let enabledTools = {};
 
@@ -80,13 +82,20 @@ document.addEventListener("alpine:init", () => {
         if (this.tools.includes("inline-code"))
           enabledTools.inlineCode = InlineCode;
         if (this.tools.includes("style")) enabledTools.style = StyleInlineTool;
+        if (this.tools.includes("media-picker")) {
+          enabledTools.mediaPicker = {
+            class: MediaPicker,
+            inlineToolbar: true,
+            config: this.config?.mediaPicker ?? []
+          };
+        }
         this.instance = new EditorJS({
           holder: this.$el,
-          minHeight: minHeight,
           data: this.state,
           placeholder: placeholder,
           readOnly: readOnly,
           tools: enabledTools,
+          ...this.config?.editor ?? [],
 
           onChange: () => {
             this.instance.save().then((outputData) => {
